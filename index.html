@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolitiCast Korea - 정밀 가치 진단 시스템</title>
+    <!-- Chart.js & Leaflet CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- 좌측 고정형 모던 사이드바 -->
+        <aside class="app-sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <span class="brand-icon">⚖️</span>
+                <h2>PolitiCast <span class="accent-text">KR</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-target="quiz-section">
+                    <span class="nav-icon">📋</span> 가치 검증 검사
+                </button>
+                <button class="nav-btn disabled" id="nav-dashboard" data-target="dashboard-section">
+                    <span class="nav-icon">📊</span> 종합 대시보드
+                </button>
+                <button class="nav-btn" data-target="map-section">
+                    <span class="nav-icon">🗺️</span> 지역 지형 공간분석
+                </button>
+            </nav>
+            <div style="margin-top: auto; padding: 10px; font-size: 0.75rem; color: var(--text-dim); text-align: center;">
+                v5.0 Final Release
+            </div>
+        </aside>
+
+        <!-- 상단 모바일 전용 토글 바 -->
+        <header class="mobile-top-bar">
+            <div class="mobile-brand">PolitiCast <span class="accent-text">KR</span></div>
+            <button class="menu-toggle-btn" id="menu-toggle">☰</button>
+        </header>
+
+        <!-- 핵심 콘텐츠 프레임 레이어 -->
+        <main class="app-viewport">
+            
+            <!-- SECTION 1: 가치 검증 테스트 룸 -->
+            <section id="quiz-section" class="viewport-section active">
+                <div class="glass-card quiz-card-premium" id="quiz-intro-card">
+                    <div class="text-center">
+                        <span class="neon-badge">Premium Engine v4</span>
+                        <h1 class="intro-title">대한민국 정밀 정치성향 퀴즈</h1>
+                        <p class="intro-desc">
+                            본 진단은 경제개입·자유시장주의, 사회문화진보·관습보수, 개인자유·공권규율 등 다차원적 밸런스 축을 측정하여 정밀 가치관 지표를 연산합니다. 총 79개 항목의 거대 정책 강령 데이터베이스를 기반으로 작동합니다.
+                        </p>
+                        <button class="btn-start-premium" id="btn-start-quiz">가치 검증 엔진 가동</button>
+                    </div>
+                </div>
+
+                <div class="glass-card quiz-card-premium hidden" id="quiz-main-card">
+                    <span class="neon-badge" id="question-category">-</span>
+                    <div class="progress-track"><div class="progress-fill" id="test-progress"></div></div>
+                    <div class="progress-text-hint" id="progress-string">-</div>
+
+                    <div class="quiz-body">
+                        <h2 class="question-title" id="question-text">-</h2>
+                    </div>
+
+                    <div class="quiz-options-vertical">
+                        <button class="btn-option" data-score="3">적극 동의</button>
+                        <button class="btn-option" data-score="1.5">동의</button>
+                        <button class="btn-option" data-score="0">중립 / 판단 유보</button>
+                        <button class="btn-option" data-score="-1.5">반대</button>
+                        <button class="btn-option" data-score="-3">적극 반대</button>
+                    </div>
+
+                    <div class="quiz-control-footer">
+                        <button class="btn-action-sec" id="btn-prev" disabled>이전 문항</button>
+                        <button class="btn-action-danger" id="btn-reset">테스트 리셋</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: 종합 데이터 분석 대시보드 -->
+            <section id="dashboard-section" class="viewport-section">
+                <h1 class="section-title">가치관 다차원 진단 대시보드</h1>
+                <div class="dashboard-grid">
+                    <div class="glass-card grid-item-full">
+                        <h3>AI 정밀 강령 해설 & 판정 리포트</h3>
+                        <div class="narrative-terminal" id="analysis-narrative"></div>
+                    </div>
+                    <div class="glass-card">
+                        <h3>2차원 정치 나침반 분배 매핑</h3>
+                        <div class="chart-container-fixed"><canvas id="compassChart"></canvas></div>
+                    </div>
+                    <div class="glass-card">
+                        <h3>오각형 가치관 밸런스 레이더</h3>
+                        <div class="chart-container-fixed"><canvas id="radarChart"></canvas></div>
+                    </div>
+                    <div class="glass-card">
+                        <h3>싱크로 정당 일치 분석 지표</h3>
+                        <div id="party-match-list" class="dynamic-list-column"></div>
+                    </div>
+                    <div class="glass-card">
+                        <h3>정치인 지표 매칭 Top 5</h3>
+                        <div id="politician-match-list" class="dynamic-grid-cards"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: 지역 지형 공간분석 지도 룸 -->
+            <section id="map-section" class="viewport-section">
+                <h1 class="section-title">대한민국 지역구 입체 지형 공간분석</h1>
+                <div class="map-split-layout">
+                    <div class="glass-card map-wrapper-box">
+                        <div id="map"></div>
+                    </div>
+                    <div class="glass-card map-sidebar-panel">
+                        <div id="panel-placeholder" class="sidebar-placeholder">
+                            <span>🗺️</span>
+                            <p>분석할 지역구를 지도에서 클릭해주십시오.</p>
+                            <p style="font-size:0.8rem; opacity:0.6;">데이터 부재 시 주요 도시 거점 폴백 활성화</p>
+                        </div>
+                        <div id="panel-content" class="sidebar-real-content hidden">
+                            <h2 id="dist-name" class="neon-district-title">-</h2>
+                            <div class="meta-card-row">
+                                <div class="meta-pill">당선/현직: <strong id="dist-rep">-</strong></div>
+                                <div class="meta-pill">소속 정당: <strong id="dist-party">-</strong></div>
+                                <div class="meta-pill">총선 투표율: <strong id="dist-turnout">-</strong></div>
+                            </div>
+                            <div class="panel-sub-section">
+                                <h4>선거구 정당별 판세/득표 지표</h4>
+                                <div id="dist-results-chart" class="neon-bar-stack"></div>
+                            </div>
+                            <div class="panel-sub-section">
+                                <h4>나와 이 지역구 유권자 성향 비교</h4>
+                                <div class="chart-container-sm"><canvas id="districtCompareChart"></canvas></div>
+                                <p id="district-comparison-text" class="comparison-summary-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
