@@ -584,7 +584,7 @@ const MatchingEngine = {
             polResults.push({ name: p.name, party: p.party, score: this.calculateSimilarity(state.userProfile, p) });
         });
         polResults.sort((a,b) => b.score - a.score);
-        polResults.slice(0, 5).forEach(item => {
+        polResults.slice(0, 1).forEach(item => {
             polContainer.innerHTML += `
                 <div class="politician-premium-card">
                     <div class="pol-meta-info">
@@ -921,3 +921,56 @@ document.addEventListener("DOMContentLoaded", () => {
     UIManager.init();
     if (hasData && state.isCompleted) UIManager.finalizeTest();
 });
+/* ========================================================
+   안전한 기능 추가 (지도 오류 픽스 & 관리자 패널) - 최종본
+======================================================== */
+// 1. 숨겨진 탭에서 지도 타일 깨짐 현상 완벽 픽스 (가짜 화면 크기 조절 이벤트 발생)
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.nav-btn');
+    if (btn && btn.getAttribute('data-target') === 'map-section') {
+        // 지도 탭이 열리는 시간에 맞춰 0.1초, 0.3초, 0.5초 뒤에 화면 크기가 바뀐 척 속입니다.
+        // 이러면 지도가 무조건 자기 크기를 100%로 꽉 채워서 다시 그립니다!
+        [100, 300, 500].forEach(time => {
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, time);
+        });
+    }
+});
+
+// 2. 관리자 대시보드 (비밀번호: yoonagain222)
+window.openAdminPanel = function() {
+    const pwd = prompt("관리자 비밀번호를 입력하세요:");
+    if (pwd === "yoonagain222") {
+        document.querySelectorAll('.viewport-section').forEach(sec => {
+            sec.classList.remove('active');
+            sec.style.display = 'none';
+        });
+        const adminSec = document.getElementById('admin-section');
+        if (adminSec) {
+            adminSec.style.display = 'block';
+            setTimeout(() => adminSec.classList.add('active'), 50);
+        }
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        
+        const container = document.getElementById('admin-results');
+        if (container) {
+            container.innerHTML = ""; 
+            let hasData = false;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                container.innerHTML += `
+                    <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; border-left: 4px solid var(--accent-neon);">
+                        <h4 style="color: var(--accent-neon); margin-bottom: 0.5rem; font-size:1.1rem;">저장 키: ${key}</h4>
+                        <pre style="color: var(--text-pure); white-space: pre-wrap; font-size: 0.9rem; word-break: break-all;">${value}</pre>
+                    </div>
+                `;
+                hasData = true;
+            }
+            if (!hasData) container.innerHTML = "<p style='color: var(--text-dim);'>아직 저장된 사용자 응답 데이터가 없습니다.</p>";
+        }
+    } else if (pwd !== null) {
+        alert("비밀번호가 일치하지 않습니다.");
+    }
+};
