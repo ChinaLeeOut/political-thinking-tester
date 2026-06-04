@@ -620,7 +620,7 @@ const GeographicEngine = {
     },
 
     loadDistrictGeoJSON() {
-        fetch('2024_22_Elec_simplify.json')
+        fetch('2024_22_elec_simplify.json')
             .then(res => { if(!res.ok) throw new Error(); return res.json(); })
             .then(data => this.renderFeatures(data))
             .catch(() => this.injectMockFallback());
